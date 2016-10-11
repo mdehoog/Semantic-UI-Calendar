@@ -1,0 +1,20 @@
+{
+  "name": "semantic-ui-calendar",
+  "version": "0.0.1",
+  "main": [
+    "./dist/calendar.css",
+    "./dist/calendar.js"
+  ],
+  "ignore": [
+    "src",
+    "node_modules",
+    ".bowerrc",
+    ".gitignore",
+    ".jshintignore",
+    ".jshintrc",
+    "bower.json",
+    "gulpfile.js",
+    "package.json",
+    "README.md"
+  ]
+}

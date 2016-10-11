@@ -1,0 +1,10 @@
+@theme: @@element;
+
+@import "@{semanticFolder}/default/globals/site.variables";
+@import "@{semanticFolder}/@{site}/globals/site.variables";
+@import "@{themesFolder}/default/@{type}s/@{element}.variables";
+@import (optional) "@{themesFolder}/@{theme}/@{type}s/@{element}.variables";
+
+.loadUIOverrides() {
+  @import (optional) "@{themesFolder}/@{theme}/@{type}s/@{element}.overrides";
+}
