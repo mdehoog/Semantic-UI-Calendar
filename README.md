@@ -2,6 +2,8 @@
 
 Calendar module for Semantic UI. See https://jsbin.com/ruqakehefa/ for example usage.
 
+This was originally a PR for Semantic UI: https://github.com/Semantic-Org/Semantic-UI/pull/3256.
+
 ## Installation
 
 Install using bower:
