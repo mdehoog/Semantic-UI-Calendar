@@ -11,6 +11,12 @@ var path = require('path');
 var npmPackage = require('./package.json');
 
 var settings = {
+  less: {
+    paths: [
+      path.join(__dirname, 'node_modules', 'semantic-ui-less')
+    ]
+  },
+
   /* What Browsers to Prefix */
   prefix: {
     browsers: [
@@ -77,7 +83,7 @@ gulp.task('default', function() {
 
 gulp.task('less', function () {
   return gulp.src('./src/definitions/**/*.less')
-    .pipe(less())
+    .pipe(less(settings.less))
     .pipe(autoprefixer(settings.prefix))
     .pipe(replace(comments.variables.in, comments.variables.out))
     .pipe(replace(comments.license.in, comments.license.out))
