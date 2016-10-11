@@ -6,7 +6,6 @@
     "./dist/calendar.js"
   ],
   "ignore": [
-    "src",
     "node_modules",
     ".bowerrc",
     ".gitignore",
