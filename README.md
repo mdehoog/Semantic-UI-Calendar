@@ -174,6 +174,7 @@ The following settings are supported by this module:
       link: 'link',
       cell: 'link',
       disabledCell: 'disabled',
+      adjacentCell: 'adjacent',
       activeCell: 'active',
       rangeCell: 'range',
       focusCell: 'focus',
