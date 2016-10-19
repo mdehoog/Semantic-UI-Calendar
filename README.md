@@ -40,6 +40,32 @@ Ensure that this module's `src` directory is included when compiling the LESS:
   }
 ```
 
+## Behavior
+
+These functions can be called the same way you call Semantic UI behavior functions:
+
+```javascript
+$('#mycalendar').calendar('behavior name', argumentOne, argumentTwo);
+```
+
+Behavior | Description
+--- | ---
+`refresh` | Refresh the calendar.
+`popup(arguments)` | Call the popup module (e.g. passing 'show' will show the calendar popup).
+`focus` | Focus the calendar input.
+`blur` | Blur the calendar input.
+`clear` | Clear the selected date.
+`get date` | Get the selected date.
+`set date(date, updateInput = true, fireChange = true)` | Set the selected date. Pass `false` to `updateInput` to disable updating the input. Pass `false` to `fireChange` to disable the `onChange` callback for this change.
+`get mode` | Get the current selection mode (`year`, `month`, `day`, `hour`, `minute`).
+`set mode(mode)` | Set the current selection mode (`year`, `month`, `day`, `hour`, `minute`).
+`get startDate` | Get the start date for range selection.
+`set startDate(date)` | Set the start date for range selection.
+`get endDate` | Get the end date for range selection.
+`set endDate(date)` | Set the end date for range selection.
+`get focusDate` | Get the currently focused date.
+`set focusDate(date)` | Set the currently focused date.
+
 ## Settings
 
 The following settings are supported by this module:
