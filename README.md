@@ -172,6 +172,11 @@ The following settings are supported by this module:
     onHidden: function () {
     },
 
+    // is the given date disabled?
+    isDisabled: function (date, mode) {
+      return false;
+    },
+
     selector: {
       popup: '.ui.popup',
       input: 'input',
