@@ -1,5 +1,5 @@
 /*
- * # Semantic UI 0.0.2 - Calendar
+ * # Semantic UI 0.0.3 - Calendar
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -271,7 +271,7 @@
                   cell.text(cellText);
                   cell.data(metadata.date, cellDate);
                   var adjacent = isDay && cellDate.getMonth() !== month;
-                  var disabled = adjacent || !module.helper.isDateInRange(cellDate, mode);
+                  var disabled = adjacent || !module.helper.isDateInRange(cellDate, mode) || settings.isDisabled(cellDate, mode);
                   var active = module.helper.dateEqual(cellDate, date, mode);
                   cell.toggleClass(className.adjacentCell, adjacent);
                   cell.toggleClass(className.disabledCell, disabled);
@@ -436,8 +436,9 @@
                   }
                 } else if (event.keyCode === 13) {
                   //enter
+                  var mode = module.get.mode();
                   var date = module.get.focusDate();
-                  if (date) {
+                  if (date && !settings.isDisabled(date, mode)) {
                     module.selectDate(date);
                   }
                 }
@@ -550,13 +551,19 @@
                 return false;
               }
 
+              module.set.focusDate(date);
+
+              var mode = module.get.mode();
+              if (settings.isDisabled(date, mode)) {
+                return false;
+              }
+
               var endDate = module.get.endDate();
               if (!!endDate && !!date && date > endDate) {
                 //selected date is greater than end date in range, so clear end date
                 module.set.endDate(undefined);
               }
               module.set.dataKeyValue(metadata.date, date);
-              module.set.focusDate(date);
 
               if (updateInput && $input.length) {
                 $input.val(text);
@@ -1255,6 +1262,11 @@
 
     // callback after hide animation
     onHidden: function () {
+    },
+
+    // is the given date disabled?
+    isDisabled: function (date, mode) {
+      return false;
     },
 
     selector: {
