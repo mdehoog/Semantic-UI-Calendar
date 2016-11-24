@@ -173,7 +173,7 @@
 
           create: {
             calendar: function () {
-              var i, r, c, row, cell;
+              var i, r, c, p, row, cell, pageGrid;
 
               var mode = module.get.mode();
               var today = new Date();
@@ -187,12 +187,6 @@
                 module.set.focusDate(focusDate, false, false);
               }
 
-              var minute = display.getMinutes();
-              var hour = display.getHours();
-              var day = display.getDate();
-              var month = display.getMonth();
-              var year = display.getFullYear();
-
               var isYear = mode === 'year';
               var isMonth = mode === 'month';
               var isDay = mode === 'day';
@@ -200,104 +194,131 @@
               var isMinute = mode === 'minute';
               var isTimeOnly = settings.type === 'time';
 
+              var multiMonth = Math.max(settings.multiMonth, 1);
+              var monthOffset = !isDay ? 0 : module.get.monthOffset();
+
+              var minute = display.getMinutes();
+              var hour = display.getHours();
+              var day = display.getDate();
+              var startMonth = display.getMonth() + monthOffset;
+              var year = display.getFullYear();
+
               var columns = isDay ? 7 : isHour ? 4 : 3;
               var columnsString = columns === 7 ? 'seven' : columns === 4 ? 'four' : 'three';
               var rows = isDay || isHour ? 6 : 4;
+              var pages = isDay ? multiMonth : 1;
 
-              var firstMonthDayColumn = (new Date(year, month, 1).getDay() - settings.firstDayOfWeek % 7 + 7) % 7;
-              if (!settings.constantHeight && isDay) {
-                var requiredCells = new Date(year, month + 1, 0).getDate() + firstMonthDayColumn;
-                rows = Math.ceil(requiredCells / 7);
+              var container = $container;
+              container.empty();
+              if (pages > 1) {
+                pageGrid = $('<div/>').addClass(className.grid).appendTo(container);
               }
 
-              var yearChange = isYear ? 10 : isMonth ? 1 : 0;
-              var monthChange = isDay ? 1 : 0;
-              var dayChange = isHour || isMinute ? 1 : 0;
-              var prevNextDay = isHour || isMinute ? day : 1;
-              var prevDate = new Date(year - yearChange, month - monthChange, prevNextDay - dayChange, hour);
-              var nextDate = new Date(year + yearChange, month + monthChange, prevNextDay + dayChange, hour);
+              for (p = 0; p < pages; p++) {
+                if (pages > 1) {
+                  var pageColumn = $('<div/>').addClass(className.column).appendTo(pageGrid);
+                  container = pageColumn;
+                }
 
-              var prevLast = isYear ? new Date(Math.ceil(year / 10) * 10 - 9, 0, 0) :
-                isMonth ? new Date(year, 0, 0) : isDay ? new Date(year, month, 0) : new Date(year, month, day, -1);
-              var nextFirst = isYear ? new Date(Math.ceil(year / 10) * 10 + 1, 0, 1) :
-                isMonth ? new Date(year + 1, 0, 1) : isDay ? new Date(year, month + 1, 1) : new Date(year, month, day + 1);
+                var month = startMonth + p;
+                var firstMonthDayColumn = (new Date(year, month, 1).getDay() - settings.firstDayOfWeek % 7 + 7) % 7;
+                if (!settings.constantHeight && isDay) {
+                  var requiredCells = new Date(year, month + 1, 0).getDate() + firstMonthDayColumn;
+                  rows = Math.ceil(requiredCells / 7);
+                }
 
-              var table = $('<table/>').addClass(className.table).addClass(columnsString + ' column').addClass(mode);
+                var yearChange = isYear ? 10 : isMonth ? 1 : 0;
+                var monthChange = isDay ? 1 : 0;
+                var dayChange = isHour || isMinute ? 1 : 0;
+                var prevNextDay = isHour || isMinute ? day : 1;
+                var prevDate = new Date(year - yearChange, month - monthChange, prevNextDay - dayChange, hour);
+                var nextDate = new Date(year + yearChange, month + monthChange, prevNextDay + dayChange, hour);
 
-              //no header for time-only mode
-              if (!isTimeOnly) {
-                var thead = $('<thead/>').appendTo(table);
+                var prevLast = isYear ? new Date(Math.ceil(year / 10) * 10 - 9, 0, 0) :
+                  isMonth ? new Date(year, 0, 0) : isDay ? new Date(year, month, 0) : new Date(year, month, day, -1);
+                var nextFirst = isYear ? new Date(Math.ceil(year / 10) * 10 + 1, 0, 1) :
+                  isMonth ? new Date(year + 1, 0, 1) : isDay ? new Date(year, month + 1, 1) : new Date(year, month, day + 1);
 
-                row = $('<tr/>').appendTo(thead);
-                cell = $('<th/>').attr('colspan', '' + columns).appendTo(row);
+                var table = $('<table/>').addClass(className.table).addClass(columnsString + ' column').addClass(mode).appendTo(container);
 
-                var headerText = $('<span/>').addClass(className.link).appendTo(cell);
-                headerText.text(formatter.header(display, mode, settings));
-                var newMode = isMonth ? (settings.disableYear ? 'day' : 'year') :
-                  isDay ? (settings.disableMonth ? 'year' : 'month') : 'day';
-                headerText.data(metadata.mode, newMode);
+                //no header for time-only mode
+                if (!isTimeOnly) {
+                  var thead = $('<thead/>').appendTo(table);
 
-                var prev = $('<span/>').addClass(className.prev).appendTo(cell);
-                prev.data(metadata.focusDate, prevDate);
-                prev.toggleClass(className.disabledCell, !module.helper.isDateInRange(prevLast, mode));
-                $('<i/>').addClass(className.prevIcon).appendTo(prev);
-
-                var next = $('<span/>').addClass(className.next).appendTo(cell);
-                next.data(metadata.focusDate, nextDate);
-                next.toggleClass(className.disabledCell, !module.helper.isDateInRange(nextFirst, mode));
-                $('<i/>').addClass(className.nextIcon).appendTo(next);
-
-                if (isDay) {
                   row = $('<tr/>').appendTo(thead);
-                  for (i = 0; i < columns; i++) {
-                    cell = $('<th/>').appendTo(row);
-                    cell.text(formatter.dayColumnHeader((i + settings.firstDayOfWeek) % 7, settings));
+                  cell = $('<th/>').attr('colspan', '' + columns).appendTo(row);
+
+                  var headerDate = isYear || isMonth ? new Date(year, 0, 1) :
+                    isDay ? new Date(year, month, 1) : new Date(year, month, day, hour, minute);
+                  var headerText = $('<span/>').addClass(className.link).appendTo(cell);
+                  headerText.text(formatter.header(headerDate, mode, settings));
+                  var newMode = isMonth ? (settings.disableYear ? 'day' : 'year') :
+                    isDay ? (settings.disableMonth ? 'year' : 'month') : 'day';
+                  headerText.data(metadata.mode, newMode);
+
+                  if (p === 0) {
+                    var prev = $('<span/>').addClass(className.prev).appendTo(cell);
+                    prev.data(metadata.focusDate, prevDate);
+                    prev.toggleClass(className.disabledCell, !module.helper.isDateInRange(prevLast, mode));
+                    $('<i/>').addClass(className.prevIcon).appendTo(prev);
+                  }
+
+                  if (p === pages - 1) {
+                    var next = $('<span/>').addClass(className.next).appendTo(cell);
+                    next.data(metadata.focusDate, nextDate);
+                    next.toggleClass(className.disabledCell, !module.helper.isDateInRange(nextFirst, mode));
+                    $('<i/>').addClass(className.nextIcon).appendTo(next);
+                  }
+
+                  if (isDay) {
+                    row = $('<tr/>').appendTo(thead);
+                    for (i = 0; i < columns; i++) {
+                      cell = $('<th/>').appendTo(row);
+                      cell.text(formatter.dayColumnHeader((i + settings.firstDayOfWeek) % 7, settings));
+                    }
                   }
                 }
-              }
 
-              var tbody = $('<tbody/>').appendTo(table);
-              i = isYear ? Math.ceil(year / 10) * 10 - 9 : isDay ? 1 - firstMonthDayColumn : 0;
-              for (r = 0; r < rows; r++) {
-                row = $('<tr/>').appendTo(tbody);
-                for (c = 0; c < columns; c++, i++) {
-                  var cellDate = isYear ? new Date(i, month, 1, hour, minute) :
-                    isMonth ? new Date(year, i, 1, hour, minute) : isDay ? new Date(year, month, i, hour, minute) :
-                      isHour ? new Date(year, month, day, i) : new Date(year, month, day, hour, i * 5);
-                  var cellText = isYear ? i :
-                    isMonth ? settings.text.monthsShort[i] : isDay ? cellDate.getDate() :
-                      formatter.time(cellDate, settings, true);
-                  cell = $('<td/>').addClass(className.cell).appendTo(row);
-                  cell.text(cellText);
-                  cell.data(metadata.date, cellDate);
-                  var adjacent = isDay && cellDate.getMonth() !== month;
-                  var disabled = adjacent || !module.helper.isDateInRange(cellDate, mode) || settings.isDisabled(cellDate, mode);
-                  var active = module.helper.dateEqual(cellDate, date, mode);
-                  cell.toggleClass(className.adjacentCell, adjacent);
-                  cell.toggleClass(className.disabledCell, disabled);
-                  cell.toggleClass(className.activeCell, active);
-                  if (!isHour && !isMinute) {
-                    cell.toggleClass(className.todayCell, module.helper.dateEqual(cellDate, today, mode));
-                  }
-                  if (module.helper.dateEqual(cellDate, focusDate, mode)) {
-                    //ensure that the focus date is exactly equal to the cell date
-                    //so that, if selected, the correct value is set
-                    module.set.focusDate(cellDate, false, false);
+                var tbody = $('<tbody/>').appendTo(table);
+                i = isYear ? Math.ceil(year / 10) * 10 - 9 : isDay ? 1 - firstMonthDayColumn : 0;
+                for (r = 0; r < rows; r++) {
+                  row = $('<tr/>').appendTo(tbody);
+                  for (c = 0; c < columns; c++, i++) {
+                    var cellDate = isYear ? new Date(i, month, 1, hour, minute) :
+                      isMonth ? new Date(year, i, 1, hour, minute) : isDay ? new Date(year, month, i, hour, minute) :
+                        isHour ? new Date(year, month, day, i) : new Date(year, month, day, hour, i * 5);
+                    var cellText = isYear ? i :
+                      isMonth ? settings.text.monthsShort[i] : isDay ? cellDate.getDate() :
+                        formatter.time(cellDate, settings, true);
+                    cell = $('<td/>').addClass(className.cell).appendTo(row);
+                    cell.text(cellText);
+                    cell.data(metadata.date, cellDate);
+                    var adjacent = isDay && cellDate.getMonth() !== ((month + 12) % 12);
+                    var disabled = adjacent || !module.helper.isDateInRange(cellDate, mode) || settings.isDisabled(cellDate, mode);
+                    var active = module.helper.dateEqual(cellDate, date, mode);
+                    cell.toggleClass(className.adjacentCell, adjacent);
+                    cell.toggleClass(className.disabledCell, disabled);
+                    cell.toggleClass(className.activeCell, active && !adjacent);
+                    if (!isHour && !isMinute) {
+                      cell.toggleClass(className.todayCell, !adjacent && module.helper.dateEqual(cellDate, today, mode));
+                    }
+                    if (module.helper.dateEqual(cellDate, focusDate, mode)) {
+                      //ensure that the focus date is exactly equal to the cell date
+                      //so that, if selected, the correct value is set
+                      module.set.focusDate(cellDate, false, false);
+                    }
                   }
                 }
+
+                if (settings.today) {
+                  var todayRow = $('<tr/>').appendTo(tbody);
+                  var todayButton = $('<td/>').attr('colspan', '' + columns).addClass(className.today).appendTo(todayRow);
+                  todayButton.text(formatter.today(settings));
+                  todayButton.data(metadata.date, today);
+                }
+
+                module.update.focus(false, table);
               }
-
-              if (settings.today) {
-                var todayRow = $('<tr/>').appendTo(tbody);
-                var todayButton = $('<td/>').attr('colspan', '' + columns).addClass(className.today).appendTo(todayRow);
-                todayButton.text(formatter.today(settings));
-                todayButton.data(metadata.date, today);
-              }
-
-              module.update.focus(false, table);
-
-              $container.empty();
-              table.appendTo($container);
             }
           },
 
@@ -319,11 +340,12 @@
                 }
                 var disabled = cell.hasClass(className.disabledCell);
                 var active = cell.hasClass(className.activeCell);
+                var adjacent = cell.hasClass(className.adjacentCell);
                 var focused = module.helper.dateEqual(cellDate, focusDate, mode);
                 var inRange = !rangeDate ? false :
                   ((!!startDate && module.helper.isDateInRange(cellDate, mode, startDate, rangeDate)) ||
                   (!!endDate && module.helper.isDateInRange(cellDate, mode, rangeDate, endDate)));
-                cell.toggleClass(className.focusCell, focused && (!isTouch || isTouchDown));
+                cell.toggleClass(className.focusCell, focused && (!isTouch || isTouchDown) && !adjacent);
                 cell.toggleClass(className.rangeCell, inRange && !active && !disabled);
               });
             }
@@ -486,6 +508,9 @@
               var endModule = module.get.calendarModule(settings.endCalendar);
               return (endModule ? endModule.get.date() : $module.data(metadata.endDate)) || null;
             },
+            monthOffset: function () {
+              return $module.data(metadata.monthOffset) || 0;
+            },
             mode: function () {
               //only returns valid modes for the current settings
               var mode = $module.data(metadata.mode) || settings.startMode;
@@ -588,12 +613,27 @@
             focusDate: function (date, refreshCalendar, updateFocus, updateRange) {
               date = module.helper.sanitiseDate(date);
               date = module.helper.dateInRange(date);
+              var isDay = module.get.mode() === 'day';
+              var oldFocusDate = module.get.focusDate();
+              if (isDay && date && oldFocusDate) {
+                var yearDelta = date.getFullYear() - oldFocusDate.getFullYear();
+                var monthDelta = yearDelta * 12 + date.getMonth() - oldFocusDate.getMonth();
+                if (monthDelta) {
+                  var monthOffset = module.get.monthOffset() - monthDelta;
+                  module.set.monthOffset(monthOffset, false);
+                }
+              }
               var changed = module.set.dataKeyValue(metadata.focusDate, date, refreshCalendar);
               updateFocus = (updateFocus !== false && changed && refreshCalendar === false) || focusDateUsedForRange != updateRange;
               focusDateUsedForRange = updateRange;
               if (updateFocus) {
                 module.update.focus(updateRange);
               }
+            },
+            monthOffset: function (monthOffset, refreshCalendar) {
+              var multiMonth = Math.max(settings.multiMonth, 1);
+              monthOffset = Math.max(1 - multiMonth, Math.min(0, monthOffset));
+              module.set.dataKeyValue(metadata.monthOffset, monthOffset, refreshCalendar);
             },
             mode: function (mode, refreshCalendar) {
               module.set.dataKeyValue(metadata.mode, mode, refreshCalendar);
@@ -958,6 +998,7 @@
     formatInput: true,    // format the input text upon input blur and module creation
     startCalendar: null,  // jquery object or selector for another calendar that represents the start date of a date range
     endCalendar: null,    // jquery object or selector for another calendar that represents the end date of a date range
+    multiMonth: 1,        // show multiple months when in 'day' mode
 
     // popup options ('popup', 'on', 'hoverable', and show/hide callbacks are overridden)
     popupOptions: {
@@ -1289,6 +1330,8 @@
       calendar: 'calendar',
       active: 'active',
       popup: 'ui popup',
+      grid: 'ui equal width grid',
+      column: 'column',
       table: 'ui celled center aligned unstackable table',
       prev: 'prev link',
       next: 'next link',
@@ -1310,7 +1353,8 @@
       focusDate: 'focusDate',
       startDate: 'startDate',
       endDate: 'endDate',
-      mode: 'mode'
+      mode: 'mode',
+      monthOffset: 'monthOffset'
     }
   };
 

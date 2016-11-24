@@ -34,6 +34,19 @@
 
 
 /*******************************
+            Grid
+*******************************/
+
+.ui.calendar .ui.popup .ui.grid {
+  display: block;
+  white-space: nowrap;
+}
+.ui.calendar .ui.popup .ui.grid > .column {
+  width: auto;
+}
+
+
+/*******************************
             Table
 *******************************/
 
