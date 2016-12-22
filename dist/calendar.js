@@ -1,5 +1,5 @@
 /*
- * # Semantic UI 0.0.3 - Calendar
+ * # Semantic UI 0.0.5 - Calendar
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -463,6 +463,9 @@
                   if (date && !settings.isDisabled(date, mode)) {
                     module.selectDate(date);
                   }
+                  //disable form submission:
+                  event.preventDefault();
+                  event.stopPropagation();
                 }
               }
 
