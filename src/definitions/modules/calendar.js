@@ -463,6 +463,9 @@
                   if (date && !settings.isDisabled(date, mode)) {
                     module.selectDate(date);
                   }
+                  //disable form submission:
+                  event.preventDefault();
+                  event.stopPropagation();
                 }
               }
 
