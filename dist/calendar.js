@@ -1,5 +1,5 @@
 /*
- * # Semantic UI 0.0.5 - Calendar
+ * # Semantic UI 0.0.6 - Calendar
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -967,7 +967,7 @@
     ;
     return (returnedValue !== undefined)
       ? returnedValue
-      : $allModules
+      : this
       ;
   };
 
