@@ -967,7 +967,7 @@
     ;
     return (returnedValue !== undefined)
       ? returnedValue
-      : $allModules
+      : this
       ;
   };
 
