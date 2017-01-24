@@ -12,6 +12,12 @@ Install using bower:
 bower install --save semantic-ui-calendar
 ```
 
+Install using npm:
+
+```
+npm install --save semantic-ui-calendar
+```
+
 Include javascript and css in html:
 
 ```html
