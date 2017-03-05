@@ -160,7 +160,7 @@ The following settings are supported by this module:
     },
 
     // callback when date changes, return false to cancel the change
-    onChange: function (date, text) {
+    onChange: function (date, text, mode) {
     },
 
     // callback before show animation, return false to prevent show
