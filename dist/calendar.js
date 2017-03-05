@@ -574,14 +574,14 @@
               date = module.helper.sanitiseDate(date);
               date = module.helper.dateInRange(date);
 
+              var mode = module.get.mode();
               var text = formatter.datetime(date, settings);
-              if (fireChange && settings.onChange.call(element, date, text) === false) {
+              if (fireChange && settings.onChange.call(element, date, text, mode) === false) {
                 return false;
               }
 
               module.set.focusDate(date);
 
-              var mode = module.get.mode();
               if (settings.isDisabled(date, mode)) {
                 return false;
               }
@@ -1288,7 +1288,7 @@
     },
 
     // callback when date changes, return false to cancel the change
-    onChange: function (date, text) {
+    onChange: function (date, text, mode) {
       return true;
     },
 
