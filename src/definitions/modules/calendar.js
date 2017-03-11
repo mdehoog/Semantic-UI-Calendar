@@ -314,7 +314,8 @@
                         type: type,
                         adjacent: adjacent,
                         disabled: disabled,
-                        active: active
+                        active: active,
+                        today: module.helper.dateEqual(cellDate, today, mode)
                     };
 
                     formatter.cell(cell, cellDate, cellOptions);
