@@ -1,6 +1,6 @@
 {
   "name": "semantic-ui-calendar",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": [
     "./dist/calendar.css",
     "./dist/calendar.js"

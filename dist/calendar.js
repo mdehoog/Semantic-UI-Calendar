@@ -1,5 +1,5 @@
 /*
- * # Semantic UI 0.0.6 - Calendar
+ * # Semantic UI 0.0.8 - Calendar
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -296,12 +296,24 @@
                     var adjacent = isDay && cellDate.getMonth() !== ((month + 12) % 12);
                     var disabled = adjacent || !module.helper.isDateInRange(cellDate, mode) || settings.isDisabled(cellDate, mode);
                     var active = module.helper.dateEqual(cellDate, date, mode);
+                    var isToday = module.helper.dateEqual(cellDate, today, mode);
                     cell.toggleClass(className.adjacentCell, adjacent);
                     cell.toggleClass(className.disabledCell, disabled);
                     cell.toggleClass(className.activeCell, active && !adjacent);
                     if (!isHour && !isMinute) {
-                      cell.toggleClass(className.todayCell, !adjacent && module.helper.dateEqual(cellDate, today, mode));
+                      cell.toggleClass(className.todayCell, !adjacent && isToday);
                     }
+
+                    // Allow for external modifications of each cell
+                    var cellOptions = {
+                      mode: mode,
+                      adjacent: adjacent,
+                      disabled: disabled,
+                      active: active,
+                      today: isToday
+                    };
+                    formatter.cell(cell, cellDate, cellOptions);
+
                     if (module.helper.dateEqual(cellDate, focusDate, mode)) {
                       //ensure that the focus date is exactly equal to the cell date
                       //so that, if selected, the correct value is set
@@ -1085,6 +1097,8 @@
       },
       today: function (settings) {
         return settings.type === 'date' ? settings.text.today : settings.text.now;
+      },
+      cell: function (cell, date, cellOptions) {
       }
     },
 
