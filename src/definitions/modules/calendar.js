@@ -302,6 +302,24 @@
                     if (!isHour && !isMinute) {
                       cell.toggleClass(className.todayCell, !adjacent && module.helper.dateEqual(cellDate, today, mode));
                     }
+
+                    // Allow for external modifications of each cell
+                    var type = 'year';
+                    if (isMonth) { type = 'month'; }
+                    if (isDay) { type = 'day'; }
+                    if (isHour) { type = 'hour'; }
+                    if (isMinute) { type = 'minute'; }
+
+                    var cellOptions = {
+                        type: type,
+                        adjacent: adjacent,
+                        disabled: disabled,
+                        active: active,
+                        today: module.helper.dateEqual(cellDate, today, mode)
+                    };
+
+                    formatter.cell(cell, cellDate, cellOptions);
+
                     if (module.helper.dateEqual(cellDate, focusDate, mode)) {
                       //ensure that the focus date is exactly equal to the cell date
                       //so that, if selected, the correct value is set
@@ -1085,6 +1103,8 @@
       },
       today: function (settings) {
         return settings.type === 'date' ? settings.text.today : settings.text.now;
+      },
+      cell: function (cell, date, cellOptions) {
       }
     },
 
