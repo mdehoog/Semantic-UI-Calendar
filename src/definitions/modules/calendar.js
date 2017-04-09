@@ -296,28 +296,22 @@
                     var adjacent = isDay && cellDate.getMonth() !== ((month + 12) % 12);
                     var disabled = adjacent || !module.helper.isDateInRange(cellDate, mode) || settings.isDisabled(cellDate, mode);
                     var active = module.helper.dateEqual(cellDate, date, mode);
+                    var isToday = module.helper.dateEqual(cellDate, today, mode);
                     cell.toggleClass(className.adjacentCell, adjacent);
                     cell.toggleClass(className.disabledCell, disabled);
                     cell.toggleClass(className.activeCell, active && !adjacent);
                     if (!isHour && !isMinute) {
-                      cell.toggleClass(className.todayCell, !adjacent && module.helper.dateEqual(cellDate, today, mode));
+                      cell.toggleClass(className.todayCell, !adjacent && isToday);
                     }
 
                     // Allow for external modifications of each cell
-                    var type = 'year';
-                    if (isMonth) { type = 'month'; }
-                    if (isDay) { type = 'day'; }
-                    if (isHour) { type = 'hour'; }
-                    if (isMinute) { type = 'minute'; }
-
                     var cellOptions = {
-                        type: type,
-                        adjacent: adjacent,
-                        disabled: disabled,
-                        active: active,
-                        today: module.helper.dateEqual(cellDate, today, mode)
+                      mode: mode,
+                      adjacent: adjacent,
+                      disabled: disabled,
+                      active: active,
+                      today: isToday
                     };
-
                     formatter.cell(cell, cellDate, cellOptions);
 
                     if (module.helper.dateEqual(cellDate, focusDate, mode)) {
