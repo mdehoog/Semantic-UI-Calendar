@@ -150,6 +150,10 @@ The following settings are supported by this module:
       },
       today: function (settings) {
         return settings.type === 'date' ? settings.text.today : settings.text.now;
+      },
+      cell: function (cell, date, cellOptions) {
+        //customize the calendar cell, cellOptions is:
+        //{ mode: string, adjacent: boolean, disabled: boolean, active: boolean, today: boolean }
       }
     },
 
