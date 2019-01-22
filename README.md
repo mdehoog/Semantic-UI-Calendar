@@ -1,3 +1,5 @@
+![#f03c15](https://placehold.it/15/f03c15/000000?text=+) No longer maintained. See [Fomantic-UI](https://github.com/fomantic/Fomantic-UI) for a more recently updated version of this module.
+
 # Semantic-UI-Calendar
 
 Calendar module for Semantic UI. See https://jsbin.com/ruqakehefa/ for example usage.
